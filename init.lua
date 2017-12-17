@@ -19,7 +19,7 @@ minetest.register_chatcommand("who", {
 
 })
 
-minetest.register_chatcommand("whereis", {
+minetest.register_chatcommand("where_is", {
     params = "Playername",
     description = "Show's the Position of the Player.",
     func = function(name, playername)
@@ -54,13 +54,14 @@ end -- who()
 
 function chathelp.where(name, playername)
 
-	-- Empty Nameparameter?
-	if(playername == "" or playername == nil) then
+	-- empty or invalid Nameparameter?
+	if(not chathelp.check_name) then
 		chathelp.print(name, "Invalid Playername \"\" or nil", red)
 		return
-	end -- (if(playername)
+		
+	end -- (if(check_name)
 	
-	if(not minetest.player_exists(playername)) then
+	if(not chathelp.player_exists(playername)) then
 		chathelp.print(name, "Player " .. playername .. " are unknown.", red)
 		return
 
@@ -97,6 +98,28 @@ function chathelp.is_online(name)
 
 end -- is_online()
 
+function chathelp.player_exists(name)
+	-- is the in auth.txt?
+	if(minetest.player_exists(name)) then 
+		return true  -- yeahh, found
+		
+	end -- if(player_exists)
+	
+	return false -- not found, Player unknown
+	
+end -- player_exists()
+
+-- check_name, returns true, if the name is valid
+function chathelp.check_name(name)
+
+	if(name == "" or name == nil) then
+		return false
+		
+	end
+	
+	return true
+
+end -- check_name()
 
 -- Writes a Message in a specific color or Logs it
 function chathelp.print(name, message, color)
@@ -105,7 +128,7 @@ function chathelp.print(name, message, color)
 	
 	-- Logs a Message
 	if(color == log) then
-		minetest.log("action","[POI] "..name .. " : " .. message)
+		minetest.log("action","[CHATHELP] "..name .. " : " .. message)
 		return
 	
 	else
