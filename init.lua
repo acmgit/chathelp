@@ -141,7 +141,11 @@ function chathelp.show_ip(name, playername)
 		
 	else
 		if( chathelp.player_exists(playername) )then
+<<<<<<< HEAD
 			chathelp.print(name, "The Player " .. playername .. " isn't online.", orange)
+=======
+			chathelp.print(name, "The Player " .. playername .. " isn't online.", red)
+>>>>>>> 556bb03d62f1597367c95cd647decc5acceecca9
 			
 		else
 			chathelp.print(name, "Player " .. playername .. " is unknown.", red)
