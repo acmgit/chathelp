@@ -29,6 +29,17 @@ minetest.register_chatcommand("where_is", {
 
 })
 
+minetest.register_chatcommand("show_ip", {
+    params = "Playername",
+    description = "Show's the IP of the Player.",
+    privs = {server = true},
+    func = function(name, playername)
+		chathelp.show_ip(name, playername)
+		
+    end
+
+})
+
 -- Commands for chathelp
 
 -- who - Shows you all Players are online.
@@ -98,8 +109,9 @@ function chathelp.is_online(name)
 
 end -- is_online()
 
+-- check if player is known? false = unknown
 function chathelp.player_exists(name)
-	-- is the in auth.txt?
+	-- is the player in auth.txt?
 	if(minetest.player_exists(name)) then 
 		return true  -- yeahh, found
 		
@@ -120,6 +132,25 @@ function chathelp.check_name(name)
 	return true
 
 end -- check_name()
+
+function chathelp.show_ip(name, playername)
+	
+	if( chathelp.is_online(playername) ) then
+		local ip = minetest.get_player_ip(playername)
+		chathelp.print(name, "The IP from " .. playername .. " is: " .. ip, green)
+		
+	else
+		if( chathelp.player_exists(playername) )then
+			chathelp.print(name, "The Player " .. playername .. " isn't online.", red)
+			
+		else
+			chathelp.print(name, "Player " .. playername .. " is unknown.", red)
+			
+		end -- if(player_exist)
+		
+	end -- if(player_is_online)
+	
+end -- chathelp.show_ip()
 
 -- Writes a Message in a specific color or Logs it
 function chathelp.print(name, message, color)
