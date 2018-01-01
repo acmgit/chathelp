@@ -50,6 +50,18 @@ minetest.register_chatcommand("show_ip", {
 
 })
 
+--[[
+minetest.register_chatcommand("show_me", {
+    params = "",
+    description = "Show's Information about the pointed Item.",
+    func = function(name)
+		chathelp.show_me(name)
+		
+    end
+
+})
+--]]
+
 minetest.register_chatcommand("bring", {
     params = "Playername",
     description = "Teleports to Player.",
@@ -94,6 +106,16 @@ minetest.register_chatcommand("add_hp", {
 
 })
 
+minetest.register_chatcommand("sub_hp", {
+    params = "Playername, Hitpoints",
+    description = "Removes Hitpoints to a Player.",
+    privs = {server = true},
+    func = function(name, arg)
+		chathelp.sub_hp(name, arg)
+		
+    end
+
+})
 minetest.register_chatcommand("get_hp", {
     params = "Playername",
     description = "Shows the Hitpoints to a Player.",
@@ -245,6 +267,26 @@ function chathelp.show_item(name)
 		
 end -- chathelp.show_item()
 
+--[[
+-- Shows Information about an Item you point on it
+function chathelp.show_me(name)
+
+
+	local curr_node_pos = minetest.get_thing_position(pointed_thing, true)
+	local curr_node = minetest.get_node_or_nil(curr_node_pos)
+	
+	if( curr_node ~= nil ) then
+		chathelp.print(name, "Itemname: ", orange)
+		chathelp.print(name, curr_node:get_name(), green)
+		
+	else
+		chathelp.print(name, "Pointed on no Node.", red)
+	
+	end
+
+end -- chathelp.show_me()
+--]]
+
 -- Teleports me to the Position of the Playername
 function chathelp.teleport_to(name, playername)
 
@@ -355,6 +397,7 @@ function chathelp.set_hp(name, arg)
 
 end -- chathelp.set_hp()
 
+-- Adds HP to the Player
 function chathelp.add_hp(name, arg)
 
 	local playername
@@ -389,6 +432,42 @@ function chathelp.add_hp(name, arg)
 	end -- if(is_online
 
 end -- chathelp.add_hp()
+
+-- Removes HP to the Player
+function chathelp.sub_hp(name, arg)
+
+	local playername
+	local hitpoints
+	
+	if( string.find(arg, ",") == nil) then
+		chathelp.print(name, "Wrong Parameter (No Hitpoints).", red)
+		return false
+		
+	end
+	
+	-- Split the Argument
+	playername = chathelp.trim(string.sub(arg,1, string.find(arg, ",")-1))
+	local hp = chathelp.trim(string.sub(arg, string.find(arg, ",") + 1, -1))
+	if(string.len(hp) == 0) then
+		chathelp.print(name, "No Number of Hitpoints given.", red)
+		
+	else
+		hitpoints = tonumber(hp)
+		
+	end -- if(string.len)
+	
+	if( chathelp.is_online(playername) )then -- is Player online?
+		local player = minetest.get_player_by_name(playername)
+		chathelp.print(name, hitpoints .. " Hitpoints removed from " .. playername, green)
+		player:set_hp(player:get_hp() - hitpoints) -- Add Hitpoints
+		chathelp.print(name, name .. " has removed " .. hitpoints .. " Hitpoints from " .. playername, log)
+	
+	else
+		chathelp.print(name, "Player " .. playername .. " isn't online.", red)
+	
+	end -- if(is_online
+
+end -- chathelp.sub_hp()
 
 -- Trims a String
 function chathelp.trim(myString)
