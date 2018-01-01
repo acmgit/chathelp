@@ -72,6 +72,38 @@ minetest.register_chatcommand("summon", {
 
 })
 
+minetest.register_chatcommand("set_hp", {
+    params = "Playername, Hitpoints",
+    description = "Set's the HP of a Player.",
+    privs = {server = true},
+    func = function(name, arg)
+		chathelp.set_hp(name, arg)
+		
+    end
+
+})
+
+minetest.register_chatcommand("add_hp", {
+    params = "Playername, Hitpoints",
+    description = "Adds Hitpoints to a Player.",
+    privs = {server = true},
+    func = function(name, arg)
+		chathelp.add_hp(name, arg)
+		
+    end
+
+})
+
+minetest.register_chatcommand("get_hp", {
+    params = "Playername",
+    description = "Shows the Hitpoints to a Player.",
+    func = function(name, playername)
+		chathelp.get_hp(name, playername)
+		
+    end
+
+})
+
 -- Commands for chathelp
 
 -- who - Shows you all Players are online.
@@ -257,6 +289,112 @@ function chathelp.summon(name, playername)
 	
 end -- chathelp.summon()
 
+-- Shows the HP of an Player
+function chathelp.get_hp(name, playername)
+
+	if( string.len(playername) == 0 ) then
+		chathelp.print(name, "No Playername given.", red)
+		return false
+	end
+	
+	if( chathelp.is_online(playername) )then -- is Player online?
+		local player = minetest.get_player_by_name(playername)
+		local hp = player:get_hp()
+		
+		chathelp.print(name, player:get_player_name() .. " has " .. hp .. " Hitpoints.", green)
+		if(hp > 0) then
+			chathelp.print(name, "This are " .. hp / 2 .. " Hearts.", green)
+			
+		else
+			chathelp.print(name, "Is dead.", green)
+		
+		end -- if(hp > 0)
+
+	else
+		chathelp.print(name, "Player " .. playername .. " isn't online.", red)
+	
+	end -- if(is_online
+
+end -- chathelp.get_hp()
+
+-- Sets the HP of an Player
+function chathelp.set_hp(name, arg)
+
+	local playername
+	local hitpoints
+	
+	if( string.find(arg, ",") == nil) then
+		chathelp.print(name, "Wrong Parameter (No Hitpoints).", red)
+		return false
+		
+	end
+	
+	-- Split the Argument
+	playername = chathelp.trim(string.sub(arg,1, string.find(arg, ",")-1))
+	local hp = chathelp.trim(string.sub(arg, string.find(arg, ",") + 1, -1))
+	
+	if(string.len(hp) == 0) then
+		chathelp.print(name, "No Number of Hitpoints given.", red)
+		
+	else
+		hitpoints = tonumber(hp)
+		
+	end -- if(string.len)
+	
+
+	if( chathelp.is_online(playername) )then -- is Player online?
+		local player = minetest.get_player_by_name(playername)
+		chathelp.print(name, "Hitpoints of " .. playername .. " set to " .. hitpoints, green)
+		player:set_hp(hitpoints) -- Sets the Hitpoints
+		chathelp.print(name, "Has setted the Hitpoints of " .. playername .. " to " .. hitpoints, log)
+	
+	else
+		chathelp.print(name, "Player " .. playername .. " isn't online.", red)
+	
+	end -- if(is_online
+
+end -- chathelp.set_hp()
+
+function chathelp.add_hp(name, arg)
+
+	local playername
+	local hitpoints
+	
+	if( string.find(arg, ",") == nil) then
+		chathelp.print(name, "Wrong Parameter (No Hitpoints).", red)
+		return false
+		
+	end
+	
+	-- Split the Argument
+	playername = chathelp.trim(string.sub(arg,1, string.find(arg, ",")-1))
+	local hp = chathelp.trim(string.sub(arg, string.find(arg, ",") + 1, -1))
+	if(string.len(hp) == 0) then
+		chathelp.print(name, "No Number of Hitpoints given.", red)
+		
+	else
+		hitpoints = tonumber(hp)
+		
+	end -- if(string.len)
+	
+	if( chathelp.is_online(playername) )then -- is Player online?
+		local player = minetest.get_player_by_name(playername)
+		chathelp.print(name, hitpoints .. " Hitpoints add to " .. playername, green)
+		player:set_hp(player:get_hp() + hitpoints) -- Add Hitpoints
+		chathelp.print(name, name .. " has added " .. hitpoints .. " Hitpoints to " .. playername, log)
+	
+	else
+		chathelp.print(name, "Player " .. playername .. " isn't online.", red)
+	
+	end -- if(is_online
+
+end -- chathelp.add_hp()
+
+-- Trims a String
+function chathelp.trim(myString)
+	return (string.gsub(myString, "^%s*(.-)%s*$", "%1"))
+
+end -- chathelp.trim()
 
 -- Writes a Message in a specific color or Logs it
 function chathelp.print(name, message, color)
