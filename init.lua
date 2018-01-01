@@ -29,6 +29,16 @@ minetest.register_chatcommand("where_is", {
 
 })
 
+minetest.register_chatcommand("what_is", {
+    params = "Playername",
+    description = "Show's Information about the Item.",
+    func = function(name, playername)
+		chathelp.show_item(name)
+		
+    end
+
+})
+
 minetest.register_chatcommand("show_ip", {
     params = "Playername",
     description = "Show's the IP of the Player.",
@@ -151,6 +161,27 @@ function chathelp.show_ip(name, playername)
 	end -- if(player_is_online)
 	
 end -- chathelp.show_ip()
+
+function chathelp.show_item(name)
+	
+	local player = minetest.get_player_by_name(name) -- Get the Playerobject
+	
+	if( not(player == nil) ) then
+	
+		local item = player:get_wielded_item() -- Get the current used Item
+		
+		if( not(item == nil) ) then
+			chathelp.print(name, "Itemname: ", orange)
+			chathelp.print(name, item:get_name() .. " - " .. item:get_count() .. " / " .. item:get_stack_max(), green)
+			
+		else
+			chathelp.print(name, "You have no Item in your Hand.", red)
+			
+		end --- if( item
+	
+	end -- if( player
+		
+end -- chathelp.show_item()
 
 -- Writes a Message in a specific color or Logs it
 function chathelp.print(name, message, color)
