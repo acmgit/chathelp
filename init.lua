@@ -166,13 +166,19 @@ function chathelp.show_item(name)
 	
 	local player = minetest.get_player_by_name(name) -- Get the Playerobject
 	
-	if( not(player == nil) ) then
+	if( (player ~= nil) ) then
 	
 		local item = player:get_wielded_item() -- Get the current used Item
 		
-		if( not(item == nil) ) then
-			chathelp.print(name, "Itemname: ", orange)
-			chathelp.print(name, item:get_name() .. " - " .. item:get_count() .. " / " .. item:get_stack_max(), green)
+		if( (item ~= nil) )then
+			if(item:get_name() ~= "") then
+				chathelp.print(name, "Itemname: ", orange)
+				chathelp.print(name, item:get_name() .. " - " .. item:get_count() .. " / " .. item:get_stack_max(), green)
+				
+			else
+				chathelp.print(name, "You have no Item in your Hand.", red)
+				
+			end -- if( item:get_name
 			
 		else
 			chathelp.print(name, "You have no Item in your Hand.", red)
