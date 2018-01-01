@@ -50,6 +50,28 @@ minetest.register_chatcommand("show_ip", {
 
 })
 
+minetest.register_chatcommand("bring", {
+    params = "Playername",
+    description = "Teleports to Player.",
+    privs = {server = true},
+    func = function(name, playername)
+		chathelp.teleport_to(name, playername)
+		
+    end
+
+})
+
+minetest.register_chatcommand("summon", {
+    params = "Playername",
+    description = "Summons a Player.",
+    privs = {server = true},
+    func = function(name, playername)
+		chathelp.summon(name, playername)
+		
+    end
+
+})
+
 -- Commands for chathelp
 
 -- who - Shows you all Players are online.
@@ -143,6 +165,7 @@ function chathelp.check_name(name)
 
 end -- check_name()
 
+-- Shows the IP of a Player, need Server-Priv
 function chathelp.show_ip(name, playername)
 	
 	if( chathelp.is_online(playername) ) then
@@ -162,6 +185,7 @@ function chathelp.show_ip(name, playername)
 	
 end -- chathelp.show_ip()
 
+-- Shows Information about an Item you held in the Hand
 function chathelp.show_item(name)
 	
 	local player = minetest.get_player_by_name(name) -- Get the Playerobject
@@ -188,6 +212,51 @@ function chathelp.show_item(name)
 	end -- if( player
 		
 end -- chathelp.show_item()
+
+-- Teleports me to the Position of the Playername
+function chathelp.teleport_to(name, playername)
+
+	if( chathelp.is_online(playername) )then -- is Player online?
+		local player = minetest.get_player_by_name(playername)
+		chathelp.print(name, "Player " .. player:get_player_name() .. " is at Pos: " .. minetest.pos_to_string(player:get_pos()), green)
+		chathelp.print(name, "Teleporting ..", orange)
+		
+		local me = minetest.get_player_by_name(name) -- Own Playerobject
+		me:set_pos(player:getpos()) -- Teleport
+		
+		-- Log the Teleport
+		chathelp.print(name, name .. " teleported to " .. player:get_player_name() .. " at Pos: " .. minetest.pos_to_string(player:getpos()), log)
+		
+	else
+		chathelp.print(name, "Player " .. playername .. " isn't online.", red)
+	
+	end -- if(is_online
+	
+end -- chathelp.teleport_to
+
+-- Brings a Player to me
+function chathelp.summon(name, playername)
+
+	if( chathelp.is_online(playername) )then -- is Player online?
+		local player = minetest.get_player_by_name(playername)
+		local player_pos = minetest.pos_to_string(player:get_pos())
+		
+		chathelp.print(name, "Player " .. player:get_player_name() .. " is at Pos: " .. player_pos, green)
+		chathelp.print(name, "Summoning ..", orange)
+		
+		local me = minetest.get_player_by_name(name) -- Own Playerobject
+		player:set_pos(me:getpos()) -- Teleport
+		
+		-- Log the Teleport
+		chathelp.print(name, name .. " summoned " .. player:get_player_name() .. " from Pos: " .. player_pos, log)
+		
+	else
+		chathelp.print(name, "Player " .. playername .. " isn't online.", red)
+	
+	end -- if(is_online
+	
+end -- chathelp.summon()
+
 
 -- Writes a Message in a specific color or Logs it
 function chathelp.print(name, message, color)
