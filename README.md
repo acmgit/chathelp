@@ -33,12 +33,12 @@ Can't get more than 20.
 
 ## /add_hp [Name], [Hitpoints]
 
-Increases [Hitpoints] to the Player [Name]. <br>
+Increases [Hitpoints] for the Player [Name]. <br>
 Can't get more than 20.
 
 ## /sub_hp [Name], [Hitpoints]
 
-Decreases the Hitpoints of the Player [Name] with [Hitpoints] Points.<br>
+Decreases the Hitpoints of the Player [Name] for [Hitpoints] Points.<br>
 A Value of 0 or negative let's the Player die.
 
 ## /bring [Player]
