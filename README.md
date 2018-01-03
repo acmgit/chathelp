@@ -33,7 +33,7 @@ Can't get more than 20.
 
 ## /add_hp [Name], [Hitpoints]
 
-Increases [Hitpoints] for the Player [Name]. <br>
+Increases [Hitpoints] Points for the Player [Name]. <br>
 Can't get more than 20.
 
 ## /sub_hp [Name], [Hitpoints]
