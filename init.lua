@@ -499,3 +499,5 @@ function chathelp.print(name, message, color)
 	end -- if(error == log)
 	
 end -- print_message()
+
+print("[MOD] " .. minetest.get_current_modname() .. " loaded.")
