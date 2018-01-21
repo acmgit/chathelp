@@ -6,7 +6,7 @@ local green = '#00FF00'
 local red = '#FF0000'
 local orange = '#FF6700'
 local none = 99
-local spawnpoint = "" -- Position as String for Spawn
+local spawnpoint = minetest.setting_get("static_spawnpoint") or "" -- Position as String for Spawn
 
 -- Registered Commands for Chathelp
 
