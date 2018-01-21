@@ -6,6 +6,7 @@ local green = '#00FF00'
 local red = '#FF0000'
 local orange = '#FF6700'
 local none = 99
+local spawnpoint = "" -- Position as String for Spawn
 
 -- Registered Commands for Chathelp
 
@@ -126,6 +127,22 @@ minetest.register_chatcommand("get_hp", {
 
 })
 
+minetest.register_chatcommand("spawn", {
+    params = "Playername",
+    description = "Moves you to Spawn.",
+    privs = {interact = true},
+    func = function(name)
+		if(spawnpoint ~= "") then
+			local player = minetest.get_player_by_name(name)
+			player:setpos(minetest.string_to_pos(Position))
+		
+		else
+			chathelp.print(name, "No Spawnpoint set, contact the Admin.", red)
+		
+		end
+    end
+
+})
 -- Commands for chathelp
 
 -- who - Shows you all Players are online.
