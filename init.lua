@@ -135,7 +135,7 @@ minetest.register_chatcommand("spawn", {
 		if(spawnpoint ~= "") then
 			local player = minetest.get_player_by_name(name)
 			player:setpos(minetest.string_to_pos(spawnpoint))
-		
+	
 		else
 			chathelp.print(name, "No Spawnpoint set, contact the Admin.", red)
 		
