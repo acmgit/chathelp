@@ -517,4 +517,31 @@ function chathelp.print(name, message, color)
 	
 end -- print_message()
 
+-- Remove Trunks
+local old_nodes = {"trunks:moss", "trunks:twig_1", , "trunks:twig_2", "trunks:twig_3", "trunks:twig_4", "trunks:twig_5", "trunks:twig_7", "trunks:twig_8", "trunks:twig_9", "trunks:twig_10", "trunks:twig_11", "trunks:twig_12", "trunks:twig_13"}
+local old_entities = {}
+
+for _,node_name in ipairs(old_nodes) do
+    minetest.register_node(":"..node_name, {
+        groups = {old=1},
+    })
+end
+
+minetest.register_abm({
+    nodenames = {"group:old"},
+    interval = 1,
+    chance = 1,
+    action = function(pos, node)
+        minetest.env:remove_node(pos)
+    end,
+})
+
+for _,entity_name in ipairs(old_entities) do
+    minetest.register_entity(":"..entity_name, {
+        on_activate = function(self, staticdata)
+            self.object:remove()
+        end,
+    })
+end
+
 print("[MOD] " .. minetest.get_current_modname() .. " loaded.")
