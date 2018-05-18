@@ -11,7 +11,10 @@ chathelp.purple = '#FF00FF'
 chathelp.pink = '#FFAAFF'
 chathelp.white = '#FFFFFF'
 chathelp.black = '#000000'
-chathelp.grey = '888888'
+chathelp.grey = '#888888'
+chathelp.light_blue = '#8888FF'
+chathelp.light_green = '#88FF88'
+chathelp.light_red = '#FF8888'
 chathelp.none = 99
 
 local spawnpoint = minetest.setting_get("static_spawnpoint") or "" -- Position as String for Spawn
@@ -158,6 +161,7 @@ minetest.register_craftitem("chathelp:magnifier", {
 	description = "Magnifying Glass",
 	inventory_image = "chathelp_magnifier.png",
 	stack_max = 1,
+	liquids_pointable = true,
 
 	on_use = function(itemstack, user, pointed_thing)
 	
@@ -333,9 +337,9 @@ function chathelp.show_node(name, pos)
 		chathelp.print(name, "Name of the Node: ", chathelp.purple)
 		chathelp.print(name, node.name, chathelp.green)
 		chathelp.print(name, "Located at: " .. nodepos, chathelp.green)
-		chathelp.print(name, "Light on the Node: " .. light .. ".", chathelp.pink)
+		chathelp.print(name, "Light on the Node: " .. light .. ".", chathelp.yellow)
 		chathelp.print(name, "Light above: " .. ulight .. ".", chathelp.yellow)
-		chathelp.print(name, "Light under: " .. dlight .. ".", chathelp.orange)
+		chathelp.print(name, "Light under: " .. dlight .. ".", chathelp.yellow)
 		
 		if(protected) then
 			chathelp.print(name, "Is protected? Yes.", chathelp.white)
@@ -343,6 +347,44 @@ function chathelp.show_node(name, pos)
 			chathelp.print(name, "Is protected: No.", chathelp.white)
 		end
 		
+		if(minetest.registered_nodes[node.name].diggable) then
+			chathelp.print(name, "Is diggable.", chathelp.orange)
+		end
+
+		if(minetest.registered_nodes[node.name].walkable) then
+			chathelp.print(name, "Is walkable.", chathelp.orange)
+		end
+
+		if(minetest.registered_nodes[node.name].climbable) then
+			chathelp.print(name, "Is climbable.", chathelp.orange)
+		end
+
+		if(minetest.registered_nodes[node.name].buildable_to) then
+			chathelp.print(name, "Is replaceable.", chathelp.orange)
+		end
+
+		if(minetest.registered_nodes[node.name].liquid_renewable) then
+			chathelp.print(name, "Is regenerateable.", chathelp.orange)
+		end
+		
+		if(minetest.registered_nodes[node.name].use_texture_alpha) then
+			chathelp.print(name, "Has an alpha-channel.", chathelp.orange)
+			chathelp.print(name, "With a transparency of " .. 255 - minetest.registered_nodes[node.name].alpha .. " / 255.", chathelp.light_blue)
+		end
+
+		if(minetest.registered_nodes[node.name].sunlight_propagates) then
+			chathelp.print(name, "Light shines trough.", chathelp.orange)
+		end
+		
+		if(minetest.registered_nodes[node.name].light_source > 0) then
+			chathelp.print(name, "Shines with Lightlevel " .. minetest.registered_nodes[node.name].light_source .. " / 15.", chathelp.light_blue)
+		end
+		
+		if(minetest.registered_nodes[node.name].damage_per_second > 0) then
+			chathelp.print(name, "Deals with " .. minetest.registered_nodes[node.name].damage_per_second .. " Points Damage per Second.", chathelp.light_green)
+		end
+		
+		chathelp.print(name, "Stacks with " .. minetest.registered_nodes[node.name].stack_max .. " Items / Stack.", chathelp.light_red)
 	else
 	
 		chathelp.print(name, "Pointed on no Node.", chathelp.red)
