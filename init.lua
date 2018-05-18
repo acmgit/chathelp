@@ -1,15 +1,19 @@
 local chathelp = {}
 
 -- Options for Print_Message
-local log = 0
-local green = '#00FF00'
-local red = '#FF0000'
-local orange = '#FF6700'
-local blue = '#0000FF'
-local yellow = '#FFFF00'
-local purple = '#FF00FF'
-local cyan = '#AAAAFF'
-local none = 99
+chathelp.log = 0
+chathelp.green = '#00FF00'
+chathelp.red = '#FF0000'
+chathelp.orange = '#FF6700'
+chathelp.blue = '#0000FF'
+chathelp.yellow = '#FFFF00'
+chathelp.purple = '#FF00FF'
+chathelp.pink = '#FFAAFF'
+chathelp.white = '#FFFFFF'
+chathelp.black = '#000000'
+chathelp.grey = '888888'
+chathelp.none = 99
+
 local spawnpoint = minetest.setting_get("static_spawnpoint") or "" -- Position as String for Spawn
 
 minetest.register_privilege("moderator", "Player has can work as Moderator.")
@@ -142,7 +146,7 @@ minetest.register_chatcommand("spawn", {
 			player:setpos(minetest.string_to_pos(spawnpoint))
 	
 		else
-			chathelp.print(name, "No Spawnpoint set, contact the Admin.", red)
+			chathelp.print(name, "No Spawnpoint set, contact the Admin.", chathelp.red)
 		
 		end
     end
@@ -186,7 +190,7 @@ function chathelp.who(name)
                                          ','
         end -- for _,player
  
-	chathelp.print(name, connected_players_string, green)
+	chathelp.print(name, connected_players_string, chathelp.green)
 	--minetest.chat_send_player(name, connected_players_string)
  
         return true
@@ -200,19 +204,19 @@ function chathelp.where(name, playername)
 
 	-- empty or invalid Nameparameter?
 	if(not chathelp.check_name) then
-		chathelp.print(name, "Invalid Playername \"\" or nil", red)
+		chathelp.print(name, "Invalid Playername \"\" or nil", chathelp.red)
 		return
 		
 	end -- (if(check_name)
 	
 	if(not chathelp.player_exists(playername)) then
-		chathelp.print(name, "Player " .. playername .. " are unknown.", red)
+		chathelp.print(name, "Player " .. playername .. " are unknown.", chathelp.red)
 		return
 
 	end -- if(minetest.player_exists)
 	
 	if(not chathelp.is_online(playername)) then
-		chathelp.print(name, "Player " .. playername .. " is not online.", red)
+		chathelp.print(name, "Player " .. playername .. " is not online.", chathelp.red)
 		return
 
 	end -- if(is_online
@@ -222,7 +226,7 @@ function chathelp.where(name, playername)
 		
 	-- all ok, get Position and report it
 	local pos = minetest.pos_to_string(player:getpos())
-	chathelp.print(name, "You can find Player: " .. playername .. " at Pos: " .. pos, green)
+	chathelp.print(name, "You can find Player: " .. playername .. " at Pos: " .. pos, chathelp.green)
 	
 end -- whereis()
 
@@ -271,14 +275,14 @@ function chathelp.show_ip(name, playername)
 	
 	if( chathelp.is_online(playername) ) then
 		local ip = minetest.get_player_ip(playername)
-		chathelp.print(name, "The IP from " .. playername .. " is: " .. ip, green)
+		chathelp.print(name, "The IP from " .. playername .. " is: " .. ip, chathelp.green)
 		
 	else
 		if( chathelp.player_exists(playername) )then
-			chathelp.print(name, "The Player " .. playername .. " isn't online.", orange)
+			chathelp.print(name, "The Player " .. playername .. " isn't online.", chathelp.orange)
 			
 		else
-			chathelp.print(name, "Player " .. playername .. " is unknown.", red)
+			chathelp.print(name, "Player " .. playername .. " is unknown.", chathelp.red)
 			
 		end -- if(player_exist)
 		
@@ -297,16 +301,16 @@ function chathelp.show_item(name)
 		
 		if( (item ~= nil) )then
 			if(item:get_name() ~= "") then
-				chathelp.print(name, "Itemname: ", orange)
-				chathelp.print(name, item:get_name() .. " - " .. item:get_count() .. " / " .. item:get_stack_max(), green)
+				chathelp.print(name, "Itemname: ", chathelp.orange)
+				chathelp.print(name, item:get_name() .. " - " .. item:get_count() .. " / " .. item:get_stack_max(), chathelp.green)
 				
 			else
-				chathelp.print(name, "You have no Item in your Hand.", red)
+				chathelp.print(name, "You have no Item in your Hand.", chathelp.red)
 				
 			end -- if( item:get_name
 			
 		else
-			chathelp.print(name, "You have no Item in your Hand.", red)
+			chathelp.print(name, "You have no Item in your Hand.", chathelp.red)
 			
 		end --- if( item
 	
@@ -323,16 +327,25 @@ function chathelp.show_node(name, pos)
 		local light = minetest.get_node_light(pos)
 		local dlight = minetest.get_node_light({x=pos.x, y=pos.y -1, z=pos.z})
 		local ulight = minetest.get_node_light({x=pos.x, y=pos.y +1, z=pos.z})
-	
-	
-		chathelp.print(name, "Name of the Node: ", purple)
-		chathelp.print(name, node.name, green)
-		chathelp.print(name, "Light on the Node: " .. light .. ".", cyan)
-		chathelp.print(name, "Light above: " .. ulight .. ".", yellow)
-		chathelp.print(name, "Light under: " .. dlight .. ".", orange)
+		local nodepos = minetest.pos_to_string(pos)
+		local protected = minetest.is_protected(pos, name)
+		
+		chathelp.print(name, "Name of the Node: ", chathelp.purple)
+		chathelp.print(name, node.name, chathelp.green)
+		chathelp.print(name, "Located at: " .. nodepos, chathelp.green)
+		chathelp.print(name, "Light on the Node: " .. light .. ".", chathelp.pink)
+		chathelp.print(name, "Light above: " .. ulight .. ".", chathelp.yellow)
+		chathelp.print(name, "Light under: " .. dlight .. ".", chathelp.orange)
+		
+		if(protected) then
+			chathelp.print(name, "Is protected? Yes.", chathelp.white)
+		else
+			chathelp.print(name, "Is protected: No.", chathelp.white)
+		end
+		
 	else
 	
-		chathelp.print(name, "Pointed on no Node.", red)
+		chathelp.print(name, "Pointed on no Node.", chathelp.red)
 	
 	end
 
@@ -343,17 +356,17 @@ function chathelp.teleport_to(name, playername)
 
 	if( chathelp.is_online(playername) )then -- is Player online?
 		local player = minetest.get_player_by_name(playername)
-		chathelp.print(name, "Player " .. player:get_player_name() .. " is at Pos: " .. minetest.pos_to_string(player:get_pos()), green)
-		chathelp.print(name, "Teleporting ..", orange)
+		chathelp.print(name, "Player " .. player:get_player_name() .. " is at Pos: " .. minetest.pos_to_string(player:get_pos()), chathelp.green)
+		chathelp.print(name, "Teleporting ..", chathelp.orange)
 		
 		local me = minetest.get_player_by_name(name) -- Own Playerobject
 		me:set_pos(player:getpos()) -- Teleport
 		
 		-- Log the Teleport
-		chathelp.print(name, name .. " teleported to " .. player:get_player_name() .. " at Pos: " .. minetest.pos_to_string(player:getpos()), log)
+		chathelp.print(name, name .. " teleported to " .. player:get_player_name() .. " at Pos: " .. minetest.pos_to_string(player:getpos()), chathelp.log)
 		
 	else
-		chathelp.print(name, "Player " .. playername .. " isn't online.", red)
+		chathelp.print(name, "Player " .. playername .. " isn't online.", chathelp.red)
 	
 	end -- if(is_online
 	
@@ -366,17 +379,17 @@ function chathelp.summon(name, playername)
 		local player = minetest.get_player_by_name(playername)
 		local player_pos = minetest.pos_to_string(player:get_pos())
 		
-		chathelp.print(name, "Player " .. player:get_player_name() .. " is at Pos: " .. player_pos, green)
-		chathelp.print(name, "Summoning ..", orange)
+		chathelp.print(name, "Player " .. player:get_player_name() .. " is at Pos: " .. player_pos, chathelp.green)
+		chathelp.print(name, "Summoning ..", chathelp.orange)
 		
 		local me = minetest.get_player_by_name(name) -- Own Playerobject
 		player:set_pos(me:getpos()) -- Teleport
 		
 		-- Log the Teleport
-		chathelp.print(name, name .. " summoned " .. player:get_player_name() .. " from Pos: " .. player_pos, log)
+		chathelp.print(name, name .. " summoned " .. player:get_player_name() .. " from Pos: " .. player_pos, chathelp.log)
 		
 	else
-		chathelp.print(name, "Player " .. playername .. " isn't online.", red)
+		chathelp.print(name, "Player " .. playername .. " isn't online.", chathelp.red)
 	
 	end -- if(is_online
 	
@@ -386,7 +399,7 @@ end -- chathelp.summon()
 function chathelp.get_hp(name, playername)
 
 	if( string.len(playername) == 0 ) then
-		chathelp.print(name, "No Playername given.", red)
+		chathelp.print(name, "No Playername given.", chathelp.red)
 		return false
 	end
 	
@@ -394,17 +407,17 @@ function chathelp.get_hp(name, playername)
 		local player = minetest.get_player_by_name(playername)
 		local hp = player:get_hp()
 		
-		chathelp.print(name, player:get_player_name() .. " has " .. hp .. " Hitpoints.", green)
+		chathelp.print(name, player:get_player_name() .. " has " .. hp .. " Hitpoints.", chathelp.green)
 		if(hp > 0) then
-			chathelp.print(name, "This are " .. hp / 2 .. " Hearts.", green)
+			chathelp.print(name, "This are " .. hp / 2 .. " Hearts.", chathelp.green)
 			
 		else
-			chathelp.print(name, "Is dead.", green)
+			chathelp.print(name, "Is dead.", chathelp.green)
 		
 		end -- if(hp > 0)
 
 	else
-		chathelp.print(name, "Player " .. playername .. " isn't online.", red)
+		chathelp.print(name, "Player " .. playername .. " isn't online.", chathelp.red)
 	
 	end -- if(is_online
 
@@ -417,7 +430,7 @@ function chathelp.set_hp(name, arg)
 	local hitpoints
 	
 	if( string.find(arg, ",") == nil) then
-		chathelp.print(name, "Wrong Parameter (No Hitpoints).", red)
+		chathelp.print(name, "Wrong Parameter (No Hitpoints).", chathelp.red)
 		return false
 		
 	end
@@ -427,7 +440,7 @@ function chathelp.set_hp(name, arg)
 	local hp = chathelp.trim(string.sub(arg, string.find(arg, ",") + 1, -1))
 	
 	if(string.len(hp) == 0) then
-		chathelp.print(name, "No Number of Hitpoints given.", red)
+		chathelp.print(name, "No Number of Hitpoints given.", chathelp.red)
 		
 	else
 		hitpoints = tonumber(hp)
@@ -437,12 +450,12 @@ function chathelp.set_hp(name, arg)
 
 	if( chathelp.is_online(playername) )then -- is Player online?
 		local player = minetest.get_player_by_name(playername)
-		chathelp.print(name, "Hitpoints of " .. playername .. " set to " .. hitpoints, green)
+		chathelp.print(name, "Hitpoints of " .. playername .. " set to " .. hitpoints, chathelp.green)
 		player:set_hp(hitpoints) -- Sets the Hitpoints
-		chathelp.print(name, "Has setted the Hitpoints of " .. playername .. " to " .. hitpoints, log)
+		chathelp.print(name, "Has setted the Hitpoints of " .. playername .. " to " .. hitpoints, chathelp.log)
 	
 	else
-		chathelp.print(name, "Player " .. playername .. " isn't online.", red)
+		chathelp.print(name, "Player " .. playername .. " isn't online.", chathelp.red)
 	
 	end -- if(is_online
 
@@ -455,7 +468,7 @@ function chathelp.add_hp(name, arg)
 	local hitpoints
 	
 	if( string.find(arg, ",") == nil) then
-		chathelp.print(name, "Wrong Parameter (No Hitpoints).", red)
+		chathelp.print(name, "Wrong Parameter (No Hitpoints).", chathelp.red)
 		return false
 		
 	end
@@ -464,7 +477,7 @@ function chathelp.add_hp(name, arg)
 	playername = chathelp.trim(string.sub(arg,1, string.find(arg, ",")-1))
 	local hp = chathelp.trim(string.sub(arg, string.find(arg, ",") + 1, -1))
 	if(string.len(hp) == 0) then
-		chathelp.print(name, "No Number of Hitpoints given.", red)
+		chathelp.print(name, "No Number of Hitpoints given.", chathelp.red)
 		
 	else
 		hitpoints = tonumber(hp)
@@ -473,12 +486,12 @@ function chathelp.add_hp(name, arg)
 	
 	if( chathelp.is_online(playername) )then -- is Player online?
 		local player = minetest.get_player_by_name(playername)
-		chathelp.print(name, hitpoints .. " Hitpoints add to " .. playername, green)
+		chathelp.print(name, hitpoints .. " Hitpoints add to " .. playername, chathelp.green)
 		player:set_hp(player:get_hp() + hitpoints) -- Add Hitpoints
-		chathelp.print(name, name .. " has added " .. hitpoints .. " Hitpoints to " .. playername, log)
+		chathelp.print(name, name .. " has added " .. hitpoints .. " Hitpoints to " .. playername, chathelp.log)
 	
 	else
-		chathelp.print(name, "Player " .. playername .. " isn't online.", red)
+		chathelp.print(name, "Player " .. playername .. " isn't online.", chathelp.red)
 	
 	end -- if(is_online
 
@@ -491,7 +504,7 @@ function chathelp.sub_hp(name, arg)
 	local hitpoints
 	
 	if( string.find(arg, ",") == nil) then
-		chathelp.print(name, "Wrong Parameter (No Hitpoints).", red)
+		chathelp.print(name, "Wrong Parameter (No Hitpoints).", chathelp.red)
 		return false
 		
 	end
@@ -500,7 +513,7 @@ function chathelp.sub_hp(name, arg)
 	playername = chathelp.trim(string.sub(arg,1, string.find(arg, ",")-1))
 	local hp = chathelp.trim(string.sub(arg, string.find(arg, ",") + 1, -1))
 	if(string.len(hp) == 0) then
-		chathelp.print(name, "No Number of Hitpoints given.", red)
+		chathelp.print(name, "No Number of Hitpoints given.", chathelp.red)
 		
 	else
 		hitpoints = tonumber(hp)
@@ -509,12 +522,12 @@ function chathelp.sub_hp(name, arg)
 	
 	if( chathelp.is_online(playername) )then -- is Player online?
 		local player = minetest.get_player_by_name(playername)
-		chathelp.print(name, hitpoints .. " Hitpoints removed from " .. playername, green)
+		chathelp.print(name, hitpoints .. " Hitpoints removed from " .. playername, chathelp.green)
 		player:set_hp(player:get_hp() - hitpoints) -- Add Hitpoints
-		chathelp.print(name, name .. " has removed " .. hitpoints .. " Hitpoints from " .. playername, log)
+		chathelp.print(name, name .. " has removed " .. hitpoints .. " Hitpoints from " .. playername, chathelp.log)
 	
 	else
-		chathelp.print(name, "Player " .. playername .. " isn't online.", red)
+		chathelp.print(name, "Player " .. playername .. " isn't online.", chathelp.red)
 	
 	end -- if(is_online
 
@@ -529,15 +542,15 @@ end -- chathelp.trim()
 -- Writes a Message in a specific color or Logs it
 function chathelp.print(name, message, color)
 
-	error = error or none	-- No Error given, set it to 99 (none)
+	error = error or chathelp.none	-- No Error given, set it to 99 (none)
 	
 	-- Logs a Message
-	if(color == log) then
+	if(color == chathelp.log) then
 		minetest.log("action","[CHATHELP] "..name .. " : " .. message)
 		return
 	
 	else
-		if(color ~= none) then
+		if(color ~= chathelp.none) then
 			minetest.chat_send_player(name, core.colorize(color, message))
 			return
 		
