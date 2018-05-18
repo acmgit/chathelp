@@ -5,8 +5,14 @@ local log = 0
 local green = '#00FF00'
 local red = '#FF0000'
 local orange = '#FF6700'
+local blue = '#0000FF'
+local yellow = '#FFFF00'
+local purple = '#FF00FF'
+local cyan = '#AAAAFF'
 local none = 99
 local spawnpoint = minetest.setting_get("static_spawnpoint") or "" -- Position as String for Spawn
+
+minetest.register_privilege("moderator", "Player has can work as Moderator.")
 
 -- Registered Commands for Chathelp
 
@@ -51,22 +57,21 @@ minetest.register_chatcommand("show_ip", {
 
 })
 
---[[
-minetest.register_chatcommand("show_me", {
+minetest.register_chatcommand("show_node", {
     params = "",
     description = "Show's Information about the pointed Item.",
-    func = function(name)
-		chathelp.show_me(name)
+    func = function(name, pointed_thing)
+    
+		chathelp.show_node(name, pointed_thing)
 		
     end
 
 })
---]]
 
 minetest.register_chatcommand("bring", {
     params = "Playername",
     description = "Teleports to Player.",
-    privs = {server = true},
+    privs = {moderator = true},
     func = function(name, playername)
 		chathelp.teleport_to(name, playername)
 		
@@ -77,7 +82,7 @@ minetest.register_chatcommand("bring", {
 minetest.register_chatcommand("summon", {
     params = "Playername",
     description = "Summons a Player.",
-    privs = {server = true},
+    privs = {moderator = true},
     func = function(name, playername)
 		chathelp.summon(name, playername)
 		
@@ -88,7 +93,7 @@ minetest.register_chatcommand("summon", {
 minetest.register_chatcommand("set_hp", {
     params = "Playername, Hitpoints",
     description = "Set's the HP of a Player.",
-    privs = {server = true},
+    privs = {moderator = true},
     func = function(name, arg)
 		chathelp.set_hp(name, arg)
 		
@@ -99,7 +104,7 @@ minetest.register_chatcommand("set_hp", {
 minetest.register_chatcommand("add_hp", {
     params = "Playername, Hitpoints",
     description = "Adds Hitpoints to a Player.",
-    privs = {server = true},
+    privs = {moderator = true},
     func = function(name, arg)
 		chathelp.add_hp(name, arg)
 		
@@ -110,7 +115,7 @@ minetest.register_chatcommand("add_hp", {
 minetest.register_chatcommand("sub_hp", {
     params = "Playername, Hitpoints",
     description = "Removes Hitpoints to a Player.",
-    privs = {server = true},
+    privs = {moderator = true},
     func = function(name, arg)
 		chathelp.sub_hp(name, arg)
 		
@@ -143,6 +148,31 @@ minetest.register_chatcommand("spawn", {
     end
 
 })
+
+-- magnifier
+minetest.register_craftitem("chathelp:magnifier", {
+	description = "Magnifying Glass",
+	inventory_image = "chathelp_magnifier.png",
+	stack_max = 1,
+
+	on_use = function(itemstack, user, pointed_thing)
+	
+		local pos = minetest.get_pointed_thing_position(pointed_thing)
+		local name = user:get_player_name()
+		
+		chathelp.show_node(name, pos)
+	    
+	end,
+})
+
+minetest.register_craft({
+	output = "chathelp:magnifier",
+	recipe = {
+		{"default:glass", "default:mese_crystal_fragment"},
+		{"default:stick", ""}
+	}
+})
+
 -- Commands for chathelp
 
 -- who - Shows you all Players are online.
@@ -284,25 +314,29 @@ function chathelp.show_item(name)
 		
 end -- chathelp.show_item()
 
---[[
 -- Shows Information about an Item you point on it
-function chathelp.show_me(name)
+function chathelp.show_node(name, pos)
 
-
-	local curr_node_pos = minetest.get_thing_position(pointed_thing, true)
-	local curr_node = minetest.get_node_or_nil(curr_node_pos)
+	if pos then
 	
-	if( curr_node ~= nil ) then
-		chathelp.print(name, "Itemname: ", orange)
-		chathelp.print(name, curr_node:get_name(), green)
-		
+		local node = minetest.get_node(pos)
+		local light = minetest.get_node_light(pos)
+		local dlight = minetest.get_node_light({x=pos.x, y=pos.y -1, z=pos.z})
+		local ulight = minetest.get_node_light({x=pos.x, y=pos.y +1, z=pos.z})
+	
+	
+		chathelp.print(name, "Name of the Node: ", purple)
+		chathelp.print(name, node.name, green)
+		chathelp.print(name, "Light on the Node: " .. light .. ".", cyan)
+		chathelp.print(name, "Light above: " .. ulight .. ".", yellow)
+		chathelp.print(name, "Light under: " .. dlight .. ".", orange)
 	else
+	
 		chathelp.print(name, "Pointed on no Node.", red)
 	
 	end
 
 end -- chathelp.show_me()
---]]
 
 -- Teleports me to the Position of the Playername
 function chathelp.teleport_to(name, playername)
@@ -516,32 +550,5 @@ function chathelp.print(name, message, color)
 	end -- if(error == log)
 	
 end -- print_message()
-
--- Remove Trunks
-local old_nodes = {"trunks:moss", "trunks:twig_1", , "trunks:twig_2", "trunks:twig_3", "trunks:twig_4", "trunks:twig_5", "trunks:twig_7", "trunks:twig_8", "trunks:twig_9", "trunks:twig_10", "trunks:twig_11", "trunks:twig_12", "trunks:twig_13"}
-local old_entities = {}
-
-for _,node_name in ipairs(old_nodes) do
-    minetest.register_node(":"..node_name, {
-        groups = {old=1},
-    })
-end
-
-minetest.register_abm({
-    nodenames = {"group:old"},
-    interval = 1,
-    chance = 1,
-    action = function(pos, node)
-        minetest.env:remove_node(pos)
-    end,
-})
-
-for _,entity_name in ipairs(old_entities) do
-    minetest.register_entity(":"..entity_name, {
-        on_activate = function(self, staticdata)
-            self.object:remove()
-        end,
-    })
-end
 
 print("[MOD] " .. minetest.get_current_modname() .. " loaded.")
