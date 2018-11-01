@@ -156,6 +156,10 @@ minetest.register_chatcommand("spawn", {
 
 })
 
+--[[
+
+-- This Tool has moved to the Mod Remover.
+
 -- magnifier
 minetest.register_craftitem("chathelp:magnifier", {
 	description = "Magnifying Glass",
@@ -180,6 +184,7 @@ minetest.register_craft({
 		{"default:stick", ""}
 	}
 })
+--]]
 
 -- Commands for chathelp
 
