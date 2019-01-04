@@ -44,9 +44,9 @@ minetest.register_chatcommand("where_is", {
 })
 
 minetest.register_chatcommand("what_is", {
-    params = "Playername",
-    description = "Show's Information about the Item.",
-    func = function(name, playername)
+    params = "",
+    description = "Show's Information about the Item in your Hand.",
+    func = function(name)
 		chathelp.show_item(name)
 		
     end
@@ -326,82 +326,6 @@ function chathelp.show_item(name)
 	end -- if( player
 		
 end -- chathelp.show_item()
-
--- Shows Information about an Item you point on it
-function chathelp.show_node(name, pos)
-
-	if pos then
-	
-		local node = minetest.get_node(pos)
-		local light = minetest.get_node_light(pos)
-		local dlight = minetest.get_node_light({x=pos.x, y=pos.y -1, z=pos.z})
-		local ulight = minetest.get_node_light({x=pos.x, y=pos.y +1, z=pos.z})
-		local nodepos = minetest.pos_to_string(pos)
-		local protected = minetest.is_protected(pos, name)
-		
-		chathelp.print(name, "Name of the Node: ", chathelp.purple)
-		chathelp.print(name, node.name, chathelp.green)
-		chathelp.print(name, "Located at: " .. nodepos, chathelp.green)
-		chathelp.print(name, "Light on the Node: " .. light .. ".", chathelp.yellow)
-		chathelp.print(name, "Light above: " .. ulight .. ".", chathelp.yellow)
-		chathelp.print(name, "Light under: " .. dlight .. ".", chathelp.yellow)
-		
-		if(protected) then
-			chathelp.print(name, "Is protected? Yes.", chathelp.white)
-		else
-			chathelp.print(name, "Is protected: No.", chathelp.white)
-		end
-		
-		if(minetest.registered_nodes[node.name] ~= nil) then
-			if(minetest.registered_nodes[node.name].diggable) then
-				chathelp.print(name, "Is diggable.", chathelp.orange)
-			end
-
-			if(minetest.registered_nodes[node.name].walkable) then
-				chathelp.print(name, "Is walkable.", chathelp.orange)
-			end
-
-			if(minetest.registered_nodes[node.name].climbable) then
-				chathelp.print(name, "Is climbable.", chathelp.orange)
-			end
-
-			if(minetest.registered_nodes[node.name].buildable_to) then
-				chathelp.print(name, "Is replaceable.", chathelp.orange)
-			end
-
-			if(minetest.registered_nodes[node.name].liquid_renewable) then
-				chathelp.print(name, "Is regenerateable.", chathelp.orange)
-			end
-		
-			if(minetest.registered_nodes[node.name].use_texture_alpha) then
-				chathelp.print(name, "Has an alpha-channel.", chathelp.orange)
-				chathelp.print(name, "With a transparency of " .. 255 - minetest.registered_nodes[node.name].alpha .. " / 255.", chathelp.light_blue)
-			end
-
-			if(minetest.registered_nodes[node.name].sunlight_propagates) then
-				chathelp.print(name, "Light shines trough.", chathelp.orange)
-			end
-		
-			if(minetest.registered_nodes[node.name].light_source > 0) then
-				chathelp.print(name, "Shines with Lightlevel " .. minetest.registered_nodes[node.name].light_source .. " / 15.", chathelp.light_blue)
-			end
-		
-			if(minetest.registered_nodes[node.name].damage_per_second > 0) then
-				chathelp.print(name, "Deals with " .. minetest.registered_nodes[node.name].damage_per_second .. " Points Damage per Second.", chathelp.light_green)
-			end
-		
-			chathelp.print(name, "Stacks with " .. minetest.registered_nodes[node.name].stack_max .. " Items / Stack.", chathelp.light_red)
-		else
-			chathelp.print(name, "Node unknown!", chathelp.red)
-		end
-		
-	else
-	
-		chathelp.print(name, "Pointed on no Node.", chathelp.red)
-	
-	end
-
-end -- chathelp.show_me()
 
 -- Teleports me to the Position of the Playername
 function chathelp.teleport_to(name, playername)
