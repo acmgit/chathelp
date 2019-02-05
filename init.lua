@@ -19,8 +19,6 @@ chathelp.none = 99
 
 local spawnpoint = minetest.setting_get("static_spawnpoint") or "" -- Position as String for Spawn
 
-minetest.register_privilege("moderator", "Player has can work as Moderator.")
-
 -- Registered Commands for Chathelp
 
 minetest.register_chatcommand("who", {
@@ -64,21 +62,22 @@ minetest.register_chatcommand("show_ip", {
 
 })
 
+--[[
 minetest.register_chatcommand("show_node", {
     params = "",
     description = "Show's Information about the pointed Item.",
     func = function(name, pointed_thing)
-    
-		chathelp.show_node(name, pointed_thing)
+      chathelp.show_node(name, pointed_thing)
 		
     end
 
 })
+]]--
 
 minetest.register_chatcommand("bring", {
     params = "Playername",
     description = "Teleports to Player.",
-    privs = {moderator = true},
+    privs = {teleport = true},
     func = function(name, playername)
 		chathelp.teleport_to(name, playername)
 		
@@ -89,7 +88,7 @@ minetest.register_chatcommand("bring", {
 minetest.register_chatcommand("summon", {
     params = "Playername",
     description = "Summons a Player.",
-    privs = {moderator = true},
+    privs = {bring = true},
     func = function(name, playername)
 		chathelp.summon(name, playername)
 		
@@ -100,7 +99,7 @@ minetest.register_chatcommand("summon", {
 minetest.register_chatcommand("set_hp", {
     params = "Playername, Hitpoints",
     description = "Set's the HP of a Player.",
-    privs = {moderator = true},
+    privs = {kick = true},
     func = function(name, arg)
 		chathelp.set_hp(name, arg)
 		
@@ -111,7 +110,7 @@ minetest.register_chatcommand("set_hp", {
 minetest.register_chatcommand("add_hp", {
     params = "Playername, Hitpoints",
     description = "Adds Hitpoints to a Player.",
-    privs = {moderator = true},
+    privs = {kick = true},
     func = function(name, arg)
 		chathelp.add_hp(name, arg)
 		
@@ -122,7 +121,7 @@ minetest.register_chatcommand("add_hp", {
 minetest.register_chatcommand("sub_hp", {
     params = "Playername, Hitpoints",
     description = "Removes Hitpoints to a Player.",
-    privs = {moderator = true},
+    privs = {kick = true},
     func = function(name, arg)
 		chathelp.sub_hp(name, arg)
 		
