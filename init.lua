@@ -17,7 +17,11 @@ chathelp.light_green = '#88FF88'
 chathelp.light_red = '#FF8888'
 chathelp.none = 99
 
-local spawnpoint = minetest.setting_get("static_spawnpoint") or "" -- Position as String for Spawn
+local spawnpoint = minetest.settings:get("chathelp.static_spawnpoint") or "0,0,0"
+local jail = minetest.settings:get("chathelp.jail") or "-1000,-1000,-1000"
+
+chathelp.spawnpoint = "(" .. spawnpoint .. ")"
+chathelp.jail = "(" .. jail .. ")"
 
 -- Registered Commands for Chathelp
 
@@ -41,16 +45,6 @@ minetest.register_chatcommand("where_is", {
 
 })
 
-minetest.register_chatcommand("what_is", {
-    params = "",
-    description = "Show's Information about the Item in your Hand.",
-    func = function(name)
-		chathelp.show_item(name)
-		
-    end
-
-})
-
 minetest.register_chatcommand("show_ip", {
     params = "Playername",
     description = "Show's the IP of the Player.",
@@ -61,18 +55,6 @@ minetest.register_chatcommand("show_ip", {
     end
 
 })
-
---[[
-minetest.register_chatcommand("show_node", {
-    params = "",
-    description = "Show's Information about the pointed Item.",
-    func = function(name, pointed_thing)
-      chathelp.show_node(name, pointed_thing)
-		
-    end
-
-})
-]]--
 
 minetest.register_chatcommand("bring", {
     params = "Playername",
@@ -143,7 +125,9 @@ minetest.register_chatcommand("spawn", {
     description = "Moves you to Spawn.",
     privs = {interact = true},
     func = function(name)
+	    local spawnpoint = chathelp.spawnpoint
 		if(spawnpoint ~= "") then
+			print(spawnpoint)
 			local player = minetest.get_player_by_name(name)
 			player:setpos(minetest.string_to_pos(spawnpoint))
 	
@@ -155,35 +139,28 @@ minetest.register_chatcommand("spawn", {
 
 })
 
---[[
+minetest.register_chatcommand("jail", {
+	params = "<Player>",
+	description = "Moves Player into jail.",
+	privs = {kick = true},
+	func = function(name, param)
+		local jail = chathelp.jail
+		if(jail ~= "") then
+			local player = minetest.get_player_by_name(param)
+			player:setpos(minetest.string_to_pos(jail))
+			minetest.chat_send_all(	minetest.colorize(chathelp.green,name) ..
+									minetest.colorize(chathelp.red," has teleported ") ..
+									minetest.colorize(chathelp.orange,param) ..
+									minetest.colorize(chathelp.red," into Jail!")
+								)
 
--- This Tool has moved to the Mod Remover.
+		else
+			chathelp.print(name, "No Jailpos set, contact the Admin.", chathelp.red)
 
--- magnifier
-minetest.register_craftitem("chathelp:magnifier", {
-	description = "Magnifying Glass",
-	inventory_image = "chathelp_magnifier.png",
-	stack_max = 1,
-	liquids_pointable = true,
+		end
 
-	on_use = function(itemstack, user, pointed_thing)
-	
-		local pos = minetest.get_pointed_thing_position(pointed_thing)
-		local name = user:get_player_name()
-		
-		chathelp.show_node(name, pos)
-	    
-	end,
+	end
 })
-
-minetest.register_craft({
-	output = "chathelp:magnifier",
-	recipe = {
-		{"default:glass", "default:mese_crystal_fragment"},
-		{"default:stick", ""}
-	}
-})
---]]
 
 -- Commands for chathelp
 
@@ -297,34 +274,6 @@ function chathelp.show_ip(name, playername)
 	end -- if(player_is_online)
 	
 end -- chathelp.show_ip()
-
--- Shows Information about an Item you held in the Hand
-function chathelp.show_item(name)
-	
-	local player = minetest.get_player_by_name(name) -- Get the Playerobject
-	
-	if( (player ~= nil) ) then
-	
-		local item = player:get_wielded_item() -- Get the current used Item
-		
-		if( (item ~= nil) )then
-			if(item:get_name() ~= "") then
-				chathelp.print(name, "Itemname: ", chathelp.orange)
-				chathelp.print(name, item:get_name() .. " - " .. item:get_count() .. " / " .. item:get_stack_max(), chathelp.green)
-				
-			else
-				chathelp.print(name, "You have no Item in your Hand.", chathelp.red)
-				
-			end -- if( item:get_name
-			
-		else
-			chathelp.print(name, "You have no Item in your Hand.", chathelp.red)
-			
-		end --- if( item
-	
-	end -- if( player
-		
-end -- chathelp.show_item()
 
 -- Teleports me to the Position of the Playername
 function chathelp.teleport_to(name, playername)

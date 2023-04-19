@@ -1,0 +1,5 @@
+#Command static_spawnpoint
+chathelp.static_spawnpoint (Set's a spawnpoint) string 0,0,0
+
+#Command jail
+chathelp.jail (Position of the Jail) string -1000,-1000,-1000
