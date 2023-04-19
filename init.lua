@@ -1,4 +1,5 @@
 local chathelp = {}
+local ch = chathelp
 
 -- Options for Print_Message
 chathelp.log = 0
@@ -20,8 +21,8 @@ chathelp.none = 99
 local spawnpoint = minetest.settings:get("chathelp.static_spawnpoint") or "0,0,0"
 local jail = minetest.settings:get("chathelp.jail") or "-1000,-1000,-1000"
 
-chathelp.spawnpoint = "(" .. spawnpoint .. ")"
-chathelp.jail = "(" .. jail .. ")"
+ch.spawnpoint = "(" .. spawnpoint .. ")"
+ch.jail = "(" .. jail .. ")"
 
 -- Registered Commands for Chathelp
 
@@ -127,12 +128,11 @@ minetest.register_chatcommand("spawn", {
     func = function(name)
 	    local spawnpoint = chathelp.spawnpoint
 		if(spawnpoint ~= "") then
-			print(spawnpoint)
 			local player = minetest.get_player_by_name(name)
 			player:setpos(minetest.string_to_pos(spawnpoint))
 	
 		else
-			chathelp.print(name, "No Spawnpoint set, contact the Admin.", chathelp.red)
+			ch.print(name, "No Spawnpoint set, contact the Admin.", chathelp.red)
 		
 		end
     end
@@ -144,18 +144,27 @@ minetest.register_chatcommand("jail", {
 	description = "Moves Player into jail.",
 	privs = {kick = true},
 	func = function(name, param)
-		local jail = chathelp.jail
+		local jail = ch.jail
 		if(jail ~= "") then
 			local player = minetest.get_player_by_name(param)
+			if(not player) then
+				minetest.chat_send_player(name,
+											minetest.colorize(ch.red, "Unknown Player: ") ..
+											minetest.colorize(ch.orange, param)
+										)
+				return
+
+			end
+
 			player:setpos(minetest.string_to_pos(jail))
-			minetest.chat_send_all(	minetest.colorize(chathelp.green,name) ..
-									minetest.colorize(chathelp.red," has teleported ") ..
-									minetest.colorize(chathelp.orange,param) ..
-									minetest.colorize(chathelp.red," into Jail!")
+			minetest.chat_send_all(	minetest.colorize(ch.green,name) ..
+									minetest.colorize(ch.red," has teleported ") ..
+									minetest.colorize(ch.orange,param) ..
+									minetest.colorize(ch.red," into Jail!")
 								)
 
 		else
-			chathelp.print(name, "No Jailpos set, contact the Admin.", chathelp.red)
+			ch.print(name, "No Jailpos set, contact the Admin.", ch.red)
 
 		end
 
